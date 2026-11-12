@@ -1,0 +1,68 @@
+#!/bin/sh
+# Pont AirScan DS-720D — mise en service.
+#  - serveur AirScan : service système sans privilèges (nobody:staff) ;
+#  - démon USB : root, lancé par l'agent de la session via une règle sudo limitée à cette seule
+#    commande (macOS n'accorde l'autorisation « Volumes amovibles » qu'aux programmes de la session).
+USBD=/Library/PrivilegedHelperTools/local.ds720d.usbd
+LIB=/usr/local/libexec/ds720d
+SUDOERS=/private/etc/sudoers.d/ds720d
+LD=/Library/LaunchDaemons
+LA=/Library/LaunchAgents
+
+# Nettoyage de l'ancienne architecture (démon USB système).
+rm -f "$LD/local.ds720d.usbd.plist" "$LIB/ds720d-usbd"
+
+chown root:wheel "$USBD" "$LIB"/* "$LD/local.ds720d.airscan.plist" "$LA/local.ds720d.agent.plist"
+chmod 755 "$USBD" "$LIB"/ds720d-airscan "$LIB"/ds720d-agent "$LIB"/uninstall.sh
+chmod 644 "$LD/local.ds720d.airscan.plist" "$LA/local.ds720d.agent.plist"
+touch /var/log/ds720d-airscan.log && chown nobody:staff /var/log/ds720d-airscan.log
+
+# La règle sudo n'est sûre que si seul root peut modifier le démon et chacun de ses dossiers parents.
+safe_path() {
+    p="$1"
+    while [ "$p" != "/" ]; do
+        [ "$(stat -f %u "$p")" = 0 ] || return 1
+        mode=$(stat -f %Lp "$p")
+        [ $((0$mode & 022)) -eq 0 ] || return 1
+        p=$(dirname "$p")
+    done
+    return 0
+}
+if ! safe_path "$USBD"; then
+    echo "ds720d : $USBD ou un dossier parent est modifiable par un autre compte que root ; règle sudo non créée" >&2
+    exit 1
+fi
+TMP=$(mktemp /tmp/ds720d-sudoers.XXXXXX)
+cat > "$TMP" <<EOF
+# Pont AirScan Brother DS-720D : l'agent de session peut lancer le démon USB, et lui seul, en root sans mot de passe.
+# Supprimé par /usr/local/libexec/ds720d/uninstall.sh
+%staff ALL=(root) NOPASSWD: $USBD -g staff
+EOF
+if visudo -cf "$TMP" >/dev/null 2>&1; then
+    install -o root -g wheel -m 0440 "$TMP" "$SUDOERS"
+else
+    echo "ds720d : règle sudo invalide, non installée" >&2
+    rm -f "$TMP"
+    exit 1
+fi
+rm -f "$TMP"
+if ! grep -qE '^[#@]includedir /private/etc/sudoers.d' /private/etc/sudoers; then
+    echo "ds720d : /etc/sudoers n'inclut pas sudoers.d ; règle inactive" >&2
+fi
+
+boot() {   # $1 = domaine, $2 = plist, $3 = libellé
+    launchctl enable "$1/$3" 2>/dev/null
+    for i in 1 2 3 4 5 6 7 8 9 10; do
+        launchctl bootstrap "$1" "$2" 2>/dev/null && return 0
+        launchctl print "$1/$3" >/dev/null 2>&1 && return 0
+        sleep 1
+    done
+    echo "ds720d : impossible de démarrer $3" >&2
+    return 1
+}
+boot system "$LD/local.ds720d.airscan.plist" local.ds720d.airscan || exit 1
+CONSOLE_UID=$(stat -f %u /dev/console)
+if [ "$CONSOLE_UID" != 0 ]; then
+    boot "gui/$CONSOLE_UID" "$LA/local.ds720d.agent.plist" local.ds720d.agent
+fi
+exit 0

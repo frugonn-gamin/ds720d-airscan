@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>local.ds720d.agent</string>
+    <!-- Agent de session : lance le démon USB (sudo, règle limitée) pour que macOS puisse
+         demander l'autorisation « Volumes amovibles » à l'utilisateur. -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/local/libexec/ds720d/ds720d-agent</string>
+    </array>
+    <key>LimitLoadToSessionType</key>
+    <string>Aqua</string>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>ProcessType</key>
+    <string>Interactive</string>
+</dict>
+</plist>

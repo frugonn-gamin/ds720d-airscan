@@ -1,0 +1,19 @@
+# Binaires compilés
+usbd/ds720d-usbd
+airscan/ds720d-airscan
+airscan/ds720d-airscan.arm64
+airscan/ds720d-airscan.x86_64
+agent/ds720d-agent
+tools/icbrowse
+
+# Construction du paquet (publié en release GitHub)
+pkg/build/
+pkg/dist/
+
+# Python
+__pycache__/
+*.pyc
+probe-out/
+
+# macOS
+.DS_Store

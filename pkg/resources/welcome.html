@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<style>body{font:13px -apple-system,sans-serif;line-height:1.5}h2{font-size:15px}code{font-size:12px}</style></head>
+<body>
+<h2>Pont AirScan pour Brother DS-720D</h2>
+<p>Rend le scanneur <b>Brother DS-720D</b> utilisable nativement par macOS, comme un scanneur réseau AirScan :
+Transfert d'images, Aperçu (« Importer depuis le scanneur »), Réglages&nbsp;› Imprimantes et scanneurs.</p>
+<ul>
+<li>Couleur, niveaux de gris, noir et blanc ; 150 à 600&nbsp;ppp ; recto-verso ; recadrage automatique.</li>
+<li>Aucune extension noyau (kext) ni Rosetta : binaires universels Apple Silicon et Intel, macOS&nbsp;11 ou plus récent.</li>
+<li>Le pilote Brother n'est pas nécessaire. S'il est installé, son profil couleur ICC est utilisé.</li>
+</ul>
+<p><b>Ce que l'installation modifie</b></p>
+<ul>
+<li><code>ds720d-airscan</code> : serveur AirScan (service système, utilisateur <code>nobody</code>), visible sur ce Mac uniquement.</li>
+<li><code>ds720d-agent</code> : agent de votre session ; il lance le pilote USB du scanneur.</li>
+<li><code>/Library/PrivilegedHelperTools/local.ds720d.usbd</code> : pilote USB, exécuté en administrateur.</li>
+<li><b>Une exception sudo</b> (<code>/etc/sudoers.d/ds720d</code>) qui permet de lancer <i>ce seul programme</i>
+en administrateur sans mot de passe. Elle est nécessaire car macOS n'accorde l'accès USB aux appareils de type
+« stockage » qu'aux programmes lancés depuis la session de l'utilisateur.</li>
+</ul>
+<p>Au premier branchement, macOS demandera d'autoriser <b>ds720d-agent</b> à accéder aux volumes amovibles : cliquez sur « Autoriser ».</p>
+<p>Désinstallation complète : <code>sudo /usr/local/libexec/ds720d/uninstall.sh</code></p>
+<p style="color:#666">Outil indépendant issu d'une rétro-ingénierie à des fins d'interopérabilité ; non affilié à Brother.</p>
+</body></html>

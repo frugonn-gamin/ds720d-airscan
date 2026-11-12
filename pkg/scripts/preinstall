@@ -1,0 +1,16 @@
+#!/bin/sh
+# Arrête toute version précédente (services, agent de session, lancement manuel) avant mise à jour.
+CONSOLE_UID=$(stat -f %u /dev/console)
+[ "$CONSOLE_UID" != 0 ] && launchctl bootout "gui/$CONSOLE_UID/local.ds720d.agent" 2>/dev/null
+launchctl bootout system/local.ds720d.airscan 2>/dev/null
+launchctl bootout system/local.ds720d.usbd 2>/dev/null     # ancienne architecture (démon système)
+i=0
+while [ $i -lt 30 ]; do
+    pgrep -x ds720d-agent >/dev/null || pgrep -f "local.ds720d.usbd|ds720d-usbd" >/dev/null || pgrep -x ds720d-airscan >/dev/null || break
+    sleep 1
+    i=$((i + 1))
+done
+pkill -x ds720d-agent 2>/dev/null
+pkill -x ds720d-airscan 2>/dev/null
+pkill -f "local.ds720d.usbd|ds720d-usbd" 2>/dev/null
+exit 0

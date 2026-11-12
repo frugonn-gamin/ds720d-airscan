@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>local.ds720d.airscan</string>
+    <!-- Ajouter <string>--lan</string> pour partager le scanneur avec les autres appareils du réseau local. -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/local/libexec/ds720d/ds720d-airscan</string>
+        <string>--port</string>
+        <string>9290</string>
+    </array>
+    <!-- Serveur réseau sans privilèges : seul le démon USB tourne en root. -->
+    <key>UserName</key>
+    <string>nobody</string>
+    <key>GroupName</key>
+    <string>staff</string>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>ThrottleInterval</key>
+    <integer>10</integer>
+    <key>StandardErrorPath</key>
+    <string>/var/log/ds720d-airscan.log</string>
+    <key>ProcessType</key>
+    <string>Interactive</string>
+</dict>
+</plist>

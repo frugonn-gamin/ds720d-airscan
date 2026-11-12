@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Hardened Runtime : autorise l'accès aux périphériques USB (sinon les interfaces ne peuvent pas être ouvertes). -->
+    <key>com.apple.security.device.usb</key>
+    <true/>
+</dict>
+</plist>
