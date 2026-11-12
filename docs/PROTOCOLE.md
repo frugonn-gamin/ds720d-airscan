@@ -82,7 +82,8 @@ The USB controller is a Novatek **NT96226**. Avision commands are not sent as ra
 - **Auto-crop:** the area outside the paper reads about 4 (black), so cropping to the paper edges is reliable.
 - **Duplex:** each READ returns an 80-line block (descriptor W = 2592, H = 240 plane lines). Blocks **alternate front / back**. A single end of page (`st=3`) closes the whole sheet; we saw 47 + 47 blocks. Waiting for a second end of page leaves a READ pending until the 60 s timeout, and the job aborts → fixed.
 - **End-to-end validation** (ImageCaptureCore → eSCL → DS-720D), duplex colour at 200 dpi: 2 JPEG pages in about 15 s, red ink rendered correctly.
-- **Still to check:** that the back comes out the right way round (mirroring) on a sheet printed on both sides; native 600 dpi; gray and B&W through eSCL (only tested offline so far).
+- **Installed package v1.1.0 (2026-11-12):** Image Capture → eSCL, grayscale, 150 dpi, duplex. Front 2478×3505, back 2479×3504. The back comes out the right way round, so mirroring the rear side is correct. Grayscale through eSCL is therefore validated as well.
+- **Still to check:** native 600 dpi; B&W through eSCL.
 
 ## AirScan side ✅
 
